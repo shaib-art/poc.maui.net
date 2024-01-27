@@ -1,11 +1,11 @@
+using Dynamsoft;
+using OpenCvSharp;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
-using OpenCvSharp;
-using System.Runtime.InteropServices;
-using Dynamsoft;
 using System.Collections.Concurrent;
+using System.Runtime.InteropServices;
 
-namespace BarcodeQrScanner;
+namespace MyFirstMauiApp;
 
 public partial class ScanPage : ContentPage
 {
@@ -21,8 +21,8 @@ public partial class ScanPage : ContentPage
     private static object lockObject = new object();
 
     public ScanPage()
-    {
-        InitializeComponent();
+	{
+		InitializeComponent();
         this.Disappearing += OnDisappearing;
         this.Appearing += OnAppearing;
 
@@ -181,4 +181,5 @@ public partial class ScanPage : ContentPage
         }
 
     }
+
 }

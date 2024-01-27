@@ -6,9 +6,9 @@
              Title="ScanPage">
     <Grid x:Name="scannerView" Margin="0">
         <skia:SKCanvasView x:Name="canvasView"
-                          Margin="0"
-                          HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"
-                          PaintSurface="OnCanvasViewPaintSurface" />
+                           Margin="0"
+                           HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"
+                           PaintSurface="OnCanvasViewPaintSurface" />
 
     </Grid>
 </ContentPage>
