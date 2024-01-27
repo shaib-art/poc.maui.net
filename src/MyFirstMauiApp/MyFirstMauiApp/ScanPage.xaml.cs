@@ -7,6 +7,9 @@ using System.Runtime.InteropServices;
 
 namespace MyFirstMauiApp;
 
+/// <summary>
+/// https://github.com/yushulx/dotnet-barcode-qr-code-sdk
+/// </summary>
 public partial class ScanPage : ContentPage
 {
     private BarcodeQRCodeReader reader;
