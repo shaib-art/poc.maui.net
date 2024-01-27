@@ -12,22 +12,22 @@ namespace MyFirstMauiApp;
 /// </summary>
 public partial class ScanPage : ContentPage
 {
-    private BarcodeQRCodeReader reader;
+    private readonly BarcodeQRCodeReader reader;
     private Thread? thread;
     private volatile bool isCapturing;
     private VideoCapture? capture;
 
-    private ConcurrentQueue<BarcodeQRCodeReader.Result[]> _queue = new ConcurrentQueue<BarcodeQRCodeReader.Result[]>();
-    private ConcurrentQueue<SKBitmap> _bitmapQueue = new ConcurrentQueue<SKBitmap>();
+    private readonly ConcurrentQueue<BarcodeQRCodeReader.Result[]> _queue = new();
+    private readonly ConcurrentQueue<SKBitmap> _bitmapQueue = new();
     private SKBitmap? _bitmap;
 
-    private static object lockObject = new object();
+    private static readonly object lockObject = new();
 
     public ScanPage()
 	{
 		InitializeComponent();
-        this.Disappearing += OnDisappearing;
-        this.Appearing += OnAppearing;
+        Disappearing += OnDisappearing;
+        Appearing += OnAppearing;
 
         reader = BarcodeQRCodeReader.Create();
     }
@@ -44,13 +44,13 @@ public partial class ScanPage : ContentPage
 
     private void Decode()
     {
-        Mat mat = new Mat();
+        Mat mat = new();
         capture!.Read(mat);
 
-        int length = mat.Cols * mat.Rows * mat.ElemSize();
-        if (length == 0) return;
-        byte[] bytes = new byte[length];
-        Marshal.Copy(mat.Data, bytes, 0, length);
+        int matSize = mat.Cols * mat.Rows * mat.ElemSize();
+        if (matSize == 0) return;
+        byte[] bytes = new byte[matSize];
+        Marshal.Copy(mat.Data, bytes, 0, matSize);
 
         BarcodeQRCodeReader.Result[]? results = reader.DecodeBuffer(bytes, mat.Cols, mat.Rows, (int)mat.Step(), BarcodeQRCodeReader.ImagePixelFormat.IPF_RGB_888);
         if (results != null)
@@ -67,21 +67,21 @@ public partial class ScanPage : ContentPage
                     {
                         int x = points[i];
                         int y = points[i + 1];
-                        OpenCvSharp.Point p = new OpenCvSharp.Point(x, y);
+                        OpenCvSharp.Point p = new(x, y);
                         xMin = x < xMin ? x : xMin;
                         yMax = y > yMax ? y : yMax;
                         all[i / 2] = p;
                     }
-                    OpenCvSharp.Point[][] contours = new OpenCvSharp.Point[][] { all };
+                    OpenCvSharp.Point[][] contours = [all];
                     Cv2.DrawContours(mat, contours, 0, new Scalar(0, 0, 255), 2);
                     if (result.Text != null) Cv2.PutText(mat, result.Text, new OpenCvSharp.Point(xMin, yMax), HersheyFonts.HersheySimplex, 1, new Scalar(0, 0, 255), 2);
                 }
             }
         }
 
-        Mat newFrame = new Mat();
+        Mat newFrame = new();
         Cv2.CvtColor(mat, newFrame, ColorConversionCodes.BGR2RGBA);
-        SKBitmap bitmap = new SKBitmap(mat.Cols, mat.Rows, SKColorType.Rgba8888, SKAlphaType.Premul);
+        SKBitmap bitmap = new(mat.Cols, mat.Rows, SKColorType.Rgba8888, SKAlphaType.Premul);
         bitmap.SetPixels(newFrame.Data);
         if (_bitmapQueue.Count == 2) ClearQueue();
         _bitmapQueue.Enqueue(bitmap);
@@ -98,7 +98,7 @@ public partial class ScanPage : ContentPage
 
     private void ClearQueue()
     {
-        while (_bitmapQueue.Count > 0)
+        while (!_bitmapQueue.IsEmpty)
         {
             _bitmapQueue.TryDequeue(out var bitmap);
             bitmap?.Dispose();
